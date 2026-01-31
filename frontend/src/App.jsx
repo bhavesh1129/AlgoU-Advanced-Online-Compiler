@@ -22,8 +22,11 @@ int main() {
   const [input, setInput] = useState('');
   const [output, setOutput] = useState('');
   const [aiReview, setAiReview] = useState('');
+  const [isRunning, setIsRunning] = useState(false);
+  const [isAiReviewLoading, setIsAiReviewLoading] = useState(false);
 
   const handleRun = async () => {
+    setIsRunning(true);
     const payload = {
       language: 'cpp',
       code,
@@ -35,10 +38,13 @@ int main() {
       setOutput(data.output);
     } catch (error) {
       setOutput('Error executing code, error: ' + error.message);
+    } finally {
+      setIsRunning(false);
     }
   };
 
   const handleAiReview = async () => {
+    setIsAiReviewLoading(true);
     const payload = {
       code
     };
@@ -48,7 +54,9 @@ int main() {
       setAiReview(data.review);
     } catch (error) {
       setAiReview('Error in AI review, error: ' + error.message);
-    };
+    } finally {
+      setIsAiReviewLoading(false);
+    }
   };
 
   return (
@@ -112,15 +120,17 @@ int main() {
           <div className="flex gap-4 mt-2">
             <button
               onClick={handleRun}
-              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition"
+              disabled={isRunning}
+              className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed text-white font-medium py-2 px-4 rounded-lg transition"
             >
-              Run
+              {isRunning ? 'Running...' : 'Run'}
             </button>
             <button
               onClick={handleAiReview}
-              className="flex-1 bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg transition"
+              disabled={isAiReviewLoading}
+              className="flex-1 bg-green-600 hover:bg-green-700 disabled:bg-green-400 disabled:cursor-not-allowed text-white font-medium py-2 px-4 rounded-lg transition"
             >
-              AI Review
+              {isAiReviewLoading ? 'Reviewing...' : 'AI Review'}
             </button>
           </div>
         </div>
